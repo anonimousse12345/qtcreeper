@@ -23,8 +23,6 @@ import time
 import requests
 import re
 
-from lxml.html import fromstring
-
 
 # Number of users shown by interpals per search page
 MATCHES_PER_SEARCH = 20
@@ -260,8 +258,7 @@ print "\nVisiting main page..."
 r = client.get("https://www.interpals.net/")
 client.headers["Referer"] = "https://www.interpals.net/"
 
-tree = fromstring(r.text)
-csrf_token = tree.xpath('//meta[@name="csrf-token"]/@content')[0]
+csrf_token = re.findall(r'<meta name="csrf-token" content="([^"]+)"', r.text, re.M)[0]
 
 print "\n* Got CSRF Token: %s" % csrf_token
 
