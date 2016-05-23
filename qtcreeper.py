@@ -5,6 +5,17 @@
 # Based on interpals-autovisit.py by Hexalyse, https://github.com/Hexalyse
 # Requires python 2.7 and the python requests module
 
+def show_exception_and_exit(exc_type, exc_value, tb):
+	if exc_type != KeyboardInterrupt:
+		print "*** ERROR ***\n"
+		import traceback
+		traceback.print_exception(exc_type, exc_value, tb)
+		raw_input("\nPress key to exit.")
+		sys.exit(-1)
+
+import sys
+sys.excepthook = show_exception_and_exit
+
 import os
 import json
 import random
