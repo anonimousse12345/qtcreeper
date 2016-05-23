@@ -38,6 +38,7 @@ CONTINENTS = [
 DEFAULT_CONFIG = {
 	"continents" : [ x[0] for x in CONTINENTS ],
 	"countries" : [],
+	"keywords" : [],
 	"age1" : 40,
 	"age2" : 80,
 	"sex" : ["MALE"],
@@ -106,6 +107,17 @@ def get_iso_codes(promptText, allowedOptions = None):
 		
 		print "Input invalid, try again!"
 
+def get_word_list(promptText):
+	print promptText
+	
+	r = raw_input("> ")
+	
+	if r == "":
+		return []
+	
+	words = [x.strip().lower() for x in r.split(",")]
+	return [x for x in words if len(x) > 0]
+
 
 config = {}
 
@@ -140,10 +152,11 @@ while True:
 		+ "\n 2 - set gender and age range (%s, %d to %d)" % (",".join(config["sex"]), config["age1"], config["age2"])
 		+ "\n 3 - set continents (%s)" % (",".join(config["continents"]))
 		+ "\n 4 - set countries (%s)" % (",".join(config["countries"] or ["All"]))
-		+ "\n 5 - set creeper speed (%d)" % (config["creepspeed"])
-		+ "\n 6 - clear users already visited file (%d users visited)" % len(usersVisited)
-		+ "\n 7 - run creeper!"
-		,[1,2,3,4,5,6,7])
+		+ "\n 5 - set keywords (%s)" % (",".join(config["keywords"] or ["None"]))
+		+ "\n 6 - set creeper speed (%d)" % (config["creepspeed"])
+		+ "\n 7 - clear users already visited file (%d users visited)" % len(usersVisited)
+		+ "\n 8 - run creeper!"
+		,[1,2,3,4,5,6,7,8])
 
 	if command == 1:
 		print "\nEnter email address:"
@@ -176,17 +189,21 @@ while True:
 		config["countries"] = get_iso_codes("\nEnter a comma separated list of two letter country codes, or nothing for all countries:")
 	
 	elif command == 5:
+		# Keywords
+		config["keywords"] = get_word_list("\nEnter a comma separated list of keywords, or nothing to clear:")
+	
+	elif command == 6:
 		# Set creep speed
 		config["creepspeed"] = get_number_from_list("\nEnter a speed between 1 and 10 (1 = slow and realistic, 10 = stupid fast):",
 			range(1,11))
 	
-	elif command == 6:
+	elif command == 7:
 		# Clear users visited
 		if os.path.exists(USERS_VISITED_FILE):
 			os.remove(USERS_VISITED_FILE)
 		usersVisited = set()
 	
-	elif command == 7:
+	elif command == 8:
 		if config["email"] == "" or config["password"] == "":
 			print "\nSet email and password first!"
 		else:
@@ -254,7 +271,7 @@ params = {
 r = client.post("https://www.interpals.net/app/auth/login", data=params)
 client.headers["Referer"] = "https://www.interpals.net/account.php"
 
-print "\n", r.request.headers
+#print "\n", r.request.headers
 
 if r.text.find("My Profile") == -1:
     print "\nError: login failed. Either email/password incorrect or qtcreeper needs updating."
@@ -295,6 +312,10 @@ def build_search_url(previousPageNum, desiredPageNum, onlineOnly):
 	
 	# First offset, the previous offset/page we were on
 	url += "&offset=%d" % (previousPageNum * MATCHES_PER_SEARCH)
+	
+	# Keywords?
+	if len(config["keywords"]) > 0:
+		url += "&keywords=" + "+".join(config["keywords"])
 	
 	# Online?
 	if onlineOnly:
