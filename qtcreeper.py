@@ -172,9 +172,6 @@ while True:
 		# Get age range
 		config["age1"] = get_number("\nMinimum age?")
 		config["age2"] = get_number("\nMaximum age?")
-		
-		if config["age1"] < 16:
-			config["useragent"] = "Pedovision 9000"
 
 	elif command == 3:
 		# Continents
