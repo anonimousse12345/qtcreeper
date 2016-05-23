@@ -221,7 +221,7 @@ def default_wait():
 # Longer(?) pause between user views
 def user_view_wait():
 	sleepTime = random.uniform(5,15) / config["creepspeed"]
-	print "\nWaiting %d seconds..." % sleepTime
+	print "\nWaiting %f seconds..." % sleepTime
 	time.sleep(sleepTime)
 
 
@@ -366,7 +366,7 @@ while True:
 			skippedCount += 1
 			totalSkippedCount += 1
 	
-	print "\n*** THE RESULTS SO FAR ***\n"
+	print "\n*** RESULTS SO FAR ***\n"
 	print " Search page #%d" % currentSearchPage
 	print " Visited %d new users this page, %d were already visited." % (viewedCount, skippedCount)
 	print " Visited %d new users in total, %d were already visited." % (totalViewedCount, totalSkippedCount)
