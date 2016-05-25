@@ -132,6 +132,7 @@ config = {}
 
 print "Welcome to qtcreeper!"
 print "--> https://github.com/anonimousse12345/qtcreeper"
+print "User settings will be saved in: " + DATA_DIR
 
 if os.path.exists(CONFIG_FILE):
 	with open(CONFIG_FILE, "r") as f:
@@ -157,7 +158,7 @@ if os.path.exists(USERS_VISITED_FILE):
 
 while True:
 	command = get_number_from_list("\nPlease select an option and press enter:"
-		+ "\n 1 - set account email and password (%s)" % (config["email"] or "NOT SET!")
+		+ "\n 1 - set username and password (%s)" % (config["email"] or "NOT SET!")
 		+ "\n 2 - set gender and age range (%s, %d to %d)" % (",".join(config["sex"]), config["age1"], config["age2"])
 		+ "\n 3 - set continents (%s)" % (",".join(config["continents"]))
 		+ "\n 4 - set countries (%s)" % (",".join(config["countries"] or ["All"]))
@@ -168,7 +169,7 @@ while True:
 		,[1,2,3,4,5,6,7,8])
 
 	if command == 1:
-		print "\nEnter email address:"
+		print "\nEnter username or email address:"
 		config["email"] = raw_input("> ").strip().lower()
 		print "\nEnter password:"
 		config["password"] = raw_input("> ")
