@@ -12,4 +12,4 @@
 
 ##Misc notes
 * On running qtcreeper you will be prompted to specify your username/password and the type of qts to search for, this will be saved across launches
-* Settings data (config and list of already visited qts) is stored in a .qtcreeper folder in your home directory (something like C:/Users/<Username>/.qtcreeper/ on windows)
+* Settings data (config and list of already visited qts) is stored in a .qtcreeper folder in your home directory (something like C:/Users/Username/.qtcreeper/ on windows)
