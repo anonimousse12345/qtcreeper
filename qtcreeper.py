@@ -22,6 +22,7 @@ import random
 import time
 import requests
 import re
+import shutil
 
 
 # Number of users shown by interpals per search page
@@ -207,6 +208,8 @@ while True:
 	elif command == 7:
 		# Clear users visited
 		if os.path.exists(USERS_VISITED_FILE):
+			# Backup first
+			shutil.copyfile(USERS_VISITED_FILE, USERS_VISITED_FILE + "." + time.strftime("%Y-%m-%d %H:%M:%S") + ".BACKUP.txt")
 			os.remove(USERS_VISITED_FILE)
 		usersVisited = set()
 	
