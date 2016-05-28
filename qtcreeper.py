@@ -10,7 +10,7 @@ def show_exception_and_exit(exc_type, exc_value, tb):
 		print "*** ERROR ***\n"
 		import traceback
 		traceback.print_exception(exc_type, exc_value, tb)
-		raw_input("\nPress key to exit.")
+		raw_input("\nPress enter to exit.")
 		sys.exit(-1)
 
 import sys
@@ -54,7 +54,8 @@ DEFAULT_CONFIG = {
 	"sex" : ["MALE"],
 	"email" : "",
 	"password" : "",
-	"creepspeed" : 1,
+	"creepspeed" : 3,
+	"maxcreep" : 0,
 	"useragent" : random.choice(USER_AGENTS)
 }
 
@@ -67,17 +68,22 @@ if not os.path.exists(DATA_DIR):
 	os.makedirs(DATA_DIR)
 
 
-def get_number(promptText):
+def get_number(promptText, default = None):
 	print promptText
 	
 	while True:
+		i = raw_input("> ")
+		
 		try:
-			r = int(raw_input("> "))
+			r = int(i)
 			return r
 		except ValueError:
 			pass
 		
-		print "Invalid selection, try again!"
+		if default != None and i == "":
+			return default
+		else:
+			print "Invalid selection, try again!"
 
 def get_number_from_list(promptText, allowedOptions):
 	print promptText
@@ -165,9 +171,10 @@ while True:
 		+ "\n 4 - set countries (%s)" % (",".join(config["countries"] or ["All"]))
 		+ "\n 5 - set keywords (%s)" % (",".join(config["keywords"] or ["None"]))
 		+ "\n 6 - set creeper speed (%d)" % (config["creepspeed"])
-		+ "\n 7 - clear users already visited file (%d users visited)" % len(usersVisited)
-		+ "\n 8 - run creeper!"
-		,[1,2,3,4,5,6,7,8])
+		+ "\n 7 - set maximum qts to creep (%s)" % (str(config["maxcreep"] or "") or "No limit")
+		+ "\n 8 - clear users already visited file (%d users visited)" % len(usersVisited)
+		+ "\n 9 - run creeper!"
+		,[1,2,3,4,5,6,7,8,9])
 
 	if command == 1:
 		print "\nEnter username or email address:"
@@ -206,6 +213,10 @@ while True:
 			range(1,11))
 	
 	elif command == 7:
+		# Set max creep
+		config["maxcreep"] = get_number("\nEnter the maximum number of qts to creep this run, or nothing for unlimited:", 0)
+	
+	elif command == 8:
 		# Clear users visited
 		if os.path.exists(USERS_VISITED_FILE):
 			# Backup first
@@ -213,7 +224,7 @@ while True:
 			os.remove(USERS_VISITED_FILE)
 		usersVisited = set()
 	
-	elif command == 8:
+	elif command == 9:
 		if config["email"] == "" or config["password"] == "":
 			print "\nSet email and password first!"
 		else:
@@ -242,14 +253,16 @@ def record_user_visited(username):
 
 # Short pause between regular pageloads
 def default_wait():
-	print "\nWaiting..."
-	time.sleep(random.uniform(2,5))
+	if config["creepspeed"] < 10: # don't wait at all at highest speed
+		print "\nWaiting..."
+		time.sleep(random.uniform(5,10) / config["creepspeed"])
 
 # Longer(?) pause between user views
 def user_view_wait():
-	sleepTime = random.uniform(5,15) / config["creepspeed"]
-	print "\nWaiting %f seconds..." % sleepTime
-	time.sleep(sleepTime)
+	if config["creepspeed"] < 10: # don't wait at all at highest speed
+		sleepTime = random.uniform(5,15) / config["creepspeed"]
+		print "\nWaiting %f seconds..." % sleepTime
+		time.sleep(sleepTime)
 
 
 # Start a session
@@ -390,6 +403,9 @@ while True:
 			viewedCount += 1
 			totalViewedCount += 1
 			
+			if config["maxcreep"] > 0 and totalViewedCount >= config["maxcreep"]:
+				break
+			
 			user_view_wait()
 		else:
 			print "\nAlready visited user %s, skipping..." % username
@@ -403,6 +419,11 @@ while True:
 	
 	if ranOutOfUsers:
 		print "\n!!! WARNING: At one point the script ran out of online users, and started including offline users."
+	
+	if config["maxcreep"] > 0 and totalViewedCount >= config["maxcreep"]:
+		print "\n* Reached qt maximum creep limit %d, shutting down..." % config["maxcreep"]
+		raw_input("\nPress enter to exit.")
+		exit(0)
 	
 	# Next page of search
 	currentSearchPage += 1
