@@ -374,7 +374,7 @@ while True:
 	client.headers["Referer"] = userSearchUrl
 	
 	# Extract usernames
-	usernames = re.findall(r'Report ([a-zA-Z0-9\-_]+) to moderators', r.text, re.M)
+	usernames = re.findall(r'Report ([a-zA-Z0-9\-_]+) to moderator', r.text, re.M)
 	print "\nFound %d users on search page %d." % (len(usernames), currentSearchPage)
 	
 	default_wait()
